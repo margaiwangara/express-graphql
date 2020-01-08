@@ -9,19 +9,71 @@ const app = express();
 app.use(express.json());
 
 // Build GraphQL Schema
-const schema = buildSchema(`type Query, {
-  hello: String
-}`);
+const schema = buildSchema(`type Query{
+ user(id: Int!): Person,
+ users(gender: String): [Person]
+},
+type Person{
+  id: Int,
+  name: String,
+  surname: String,
+  gender: String
+}
+`);
 
 // Root provides a resolver function for each endpoint
-const root = {
-  hello: () => {
-    return "Hello World";
+const userList = [
+  {
+    id: 1,
+    name: "John",
+    surname: "Doe",
+    gender: "male"
+  },
+  {
+    id: 2,
+    name: "Jane",
+    surname: "Doe",
+    gender: "female"
+  },
+  {
+    id: 3,
+    name: "Tony",
+    surname: "Stark",
+    gender: "male"
+  },
+  {
+    id: 4,
+    name: "Natasha",
+    surname: "Romanoff",
+    gender: "female"
+  },
+  {
+    id: 5,
+    name: "Wanda",
+    surname: "Maximoff",
+    gender: "female"
   }
+];
+
+function getUser(args) {
+  const userId = args.id;
+  return userList.filter(({ id }) => id === userId)[0];
+}
+
+function getUsers(args) {
+  if (args.gender) {
+    return userList.filter(({ gender }) => gender === args.gender);
+  }
+
+  return userList;
+}
+const root = {
+  user: getUser,
+  users: getUsers
 };
 
 // Create Route
-app.use(      
+app.use(
   "/graphql",
   graphqlHTTP({
     schema,
