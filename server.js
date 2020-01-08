@@ -20,7 +20,8 @@ type Person{
   gender: String
 },
 type Mutation{
-  updateUser(id: Int!, name: String, surname: String, gender: String): Person
+  updateUser(id: Int!, name: String, surname: String, gender: String): Person,
+  deleteUser(id: Int!): [Person]
 }
 `);
 
@@ -83,14 +84,18 @@ function updateUser({ id, name, surname, gender }) {
     }
     return user;
   });
-
   return updatedUsers.filter(user => user.id == id)[0];
+}
+
+function deleteUser({ id }) {
+  return userList.filter(user => user.id !== id);
 }
 
 const root = {
   user: getUser,
   users: getUsers,
-  updateUser
+  updateUser,
+  deleteUser
 };
 
 // Create Route
