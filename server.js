@@ -18,6 +18,9 @@ type Person{
   name: String,
   surname: String,
   gender: String
+},
+type Mutation{
+  updateUser(id: Int!, name: String, surname: String, gender: String): Person
 }
 `);
 
@@ -67,9 +70,27 @@ function getUsers(args) {
 
   return userList;
 }
+
+function updateUser({ id, name, surname, gender }) {
+  let updatedUsers = userList.map(user => {
+    if (user.id === id) {
+      // update data
+      user.gender = gender;
+      user.name = name;
+      user.surname = surname;
+
+      return user;
+    }
+    return user;
+  });
+
+  return updatedUsers.filter(user => user.id == id)[0];
+}
+
 const root = {
   user: getUser,
-  users: getUsers
+  users: getUsers,
+  updateUser
 };
 
 // Create Route
